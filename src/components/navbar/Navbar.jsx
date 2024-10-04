@@ -113,7 +113,7 @@ const Navbar = () => {
                   <a href="https://linkedin.com/in/ruhul-amin-765b40200" target="_blank" rel="noopener noreferrer">
                  <FaLinkedinIn />
                  </a>
-                 </span>
+              </span>
                 </div>
               </div>
               <span
