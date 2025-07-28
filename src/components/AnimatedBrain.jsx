@@ -1,169 +1,161 @@
 
-import React, { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef, useMemo } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Points, PointMaterial } from '@react-three/drei';
+import * as THREE from 'three';
 
-export default function AnimatedBrain() {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    let animationId;
+function BrainParticles() {
+  const ref = useRef();
+  const [sphere] = useMemo(() => {
+    const sphere = new Float32Array(2000 * 3);
+    const connections = new Float32Array(1000 * 6);
     
-    // Set canvas size
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    
-    // Neural network nodes
-    const nodes = [];
-    const connections = [];
-    const nodeCount = 50;
-    
-    // Create nodes
-    for (let i = 0; i < nodeCount; i++) {
-      nodes.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        pulse: Math.random() * Math.PI * 2,
-        pulseSpeed: 0.02 + Math.random() * 0.02
-      });
+    // Create brain-like structure with interconnected nodes
+    for (let i = 0; i < 2000; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(Math.random() * 2 - 1);
+      const radius = 2 + Math.random() * 3;
+      
+      sphere[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+      sphere[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+      sphere[i * 3 + 2] = radius * Math.cos(phi);
     }
     
-    // Create connections between nearby nodes
-    const createConnections = () => {
-      connections.length = 0;
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          
-          if (distance < 120) {
-            connections.push({
-              from: i,
-              to: j,
-              distance: distance,
-              opacity: 1 - (distance / 120)
-            });
-          }
-        }
-      }
-    };
-    
-    createConnections();
-    
-    const animate = () => {
-      ctx.fillStyle = 'rgba(17, 24, 39, 0.1)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Update and draw connections
-      ctx.strokeStyle = 'rgba(99, 102, 241, 0.3)';
-      ctx.lineWidth = 1;
-      
-      connections.forEach(conn => {
-        const fromNode = nodes[conn.from];
-        const toNode = nodes[conn.to];
-        
-        // Animate connection
-        const pulse = Math.sin(Date.now() * 0.005 + conn.from) * 0.5 + 0.5;
-        ctx.globalAlpha = conn.opacity * pulse * 0.6;
-        
-        ctx.beginPath();
-        ctx.moveTo(fromNode.x, fromNode.y);
-        ctx.lineTo(toNode.x, toNode.y);
-        ctx.stroke();
-      });
-      
-      // Update and draw nodes
-      nodes.forEach((node, index) => {
-        // Update position
-        node.x += node.vx;
-        node.y += node.vy;
-        
-        // Bounce off edges
-        if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
-        if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
-        
-        // Keep nodes in bounds
-        node.x = Math.max(0, Math.min(canvas.width, node.x));
-        node.y = Math.max(0, Math.min(canvas.height, node.y));
-        
-        // Update pulse
-        node.pulse += node.pulseSpeed;
-        
-        // Draw node
-        const pulseIntensity = Math.sin(node.pulse) * 0.5 + 0.5;
-        const nodeSize = 2 + pulseIntensity * 3;
-        
-        // Outer glow
-        const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, nodeSize * 3);
-        gradient.addColorStop(0, `rgba(147, 197, 253, ${pulseIntensity * 0.8})`);
-        gradient.addColorStop(0.5, `rgba(99, 102, 241, ${pulseIntensity * 0.4})`);
-        gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
-        
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, nodeSize * 3, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Core node
-        ctx.fillStyle = `rgba(147, 197, 253, ${0.8 + pulseIntensity * 0.2})`;
-        ctx.beginPath();
-        ctx.arc(node.x, node.y, nodeSize, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      
-      // Recreate connections periodically
-      if (Math.random() < 0.01) {
-        createConnections();
-      }
-      
-      animationId = requestAnimationFrame(animate);
-    };
-    
-    animate();
-    
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      cancelAnimationFrame(animationId);
-    };
+    return [sphere, connections];
   }, []);
 
-  return (
-    <div className="absolute inset-0 z-0">
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-        style={{ background: 'linear-gradient(135deg, #111827 0%, #1e1b4b 50%, #312e81 100%)' }}
-      />
+  useFrame((state, delta) => {
+    if (ref.current) {
+      ref.current.rotation.x -= delta / 15;
+      ref.current.rotation.y -= delta / 20;
       
-      {/* Additional floating elements */}
-      <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
+      // Pulsing effect
+      const scale = 1 + Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+      ref.current.scale.setScalar(scale);
+    }
+  });
+
+  return (
+    <group rotation={[0, 0, Math.PI / 4]}>
+      <Points ref={ref} positions={sphere} stride={3} frustumCulled={false}>
+        <PointMaterial
+          transparent
+          color="#6366f1"
+          size={0.015}
+          sizeAttenuation={true}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </Points>
+    </group>
+  );
+}
+
+function NeuralConnections() {
+  const ref = useRef();
+  
+  const connections = useMemo(() => {
+    const lines = [];
+    const positions = [];
+    
+    for (let i = 0; i < 150; i++) {
+      const start = new THREE.Vector3(
+        (Math.random() - 0.5) * 8,
+        (Math.random() - 0.5) * 8,
+        (Math.random() - 0.5) * 8
+      );
+      const end = new THREE.Vector3(
+        (Math.random() - 0.5) * 8,
+        (Math.random() - 0.5) * 8,
+        (Math.random() - 0.5) * 8
+      );
+      
+      positions.push(start.x, start.y, start.z);
+      positions.push(end.x, end.y, end.z);
+    }
+    
+    return new Float32Array(positions);
+  }, []);
+
+  useFrame((state) => {
+    if (ref.current) {
+      ref.current.rotation.y = state.clock.elapsedTime * 0.1;
+      ref.current.material.opacity = 0.1 + Math.sin(state.clock.elapsedTime) * 0.05;
+    }
+  });
+
+  return (
+    <lineSegments ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={connections.length / 3}
+          array={connections}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <lineBasicMaterial
+        color="#8b5cf6"
+        transparent
+        opacity={0.15}
+        blending={THREE.AdditiveBlending}
+      />
+    </lineSegments>
+  );
+}
+
+export default function AnimatedBrain() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Enhanced gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-indigo-950/30 to-purple-950/30" />
+      
+      {/* Animated mesh background */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-indigo-500/10 to-purple-500/10 animate-pulse" 
+             style={{ 
+               backgroundImage: `radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                                radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)`,
+               animation: 'float 6s ease-in-out infinite'
+             }} />
+      </div>
+      
+      {/* 3D Canvas */}
+      <Canvas
+        camera={{ position: [0, 0, 8], fov: 60 }}
+        className="absolute inset-0"
+        style={{ background: 'transparent' }}
+      >
+        <ambientLight intensity={0.3} />
+        <pointLight position={[10, 10, 10]} intensity={0.5} color="#6366f1" />
+        <pointLight position={[-10, -10, -10]} intensity={0.3} color="#8b5cf6" />
+        
+        <BrainParticles />
+        <NeuralConnections />
+        
+        {/* Additional atmospheric elements */}
+        <mesh position={[0, 0, -5]} scale={[20, 20, 1]}>
+          <planeGeometry />
+          <meshBasicMaterial
+            color="#1e1b4b"
+            transparent
+            opacity={0.1}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+      </Canvas>
+      
+      {/* Floating elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(15)].map((_, i) => (
+          <div
             key={i}
-            className="absolute w-2 h-2 bg-indigo-400 rounded-full opacity-60"
+            className="absolute w-2 h-2 bg-indigo-400/30 rounded-full animate-pulse"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.6, 1, 0.6],
-              scale: [1, 1.5, 1],
-            }}
-            transition={{
-              duration: 4 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${3 + Math.random() * 4}s`
             }}
           />
         ))}

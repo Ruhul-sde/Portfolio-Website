@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Brain } from 'lucide-react';
+import { Menu, X, Code, Brain, User, Briefcase, FolderOpen, Mail } from 'lucide-react';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,64 +16,76 @@ export default function Navbar() {
   }, []);
 
   const navItems = [
-    { name: 'Neural Hub', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Experience', href: '#experience' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Connect', href: '#contact' },
+    { name: 'Home', href: '#home', icon: Code },
+    { name: 'About', href: '#about', icon: User },
+    { name: 'Skills', href: '#skills', icon: Brain },
+    { name: 'Experience', href: '#experience', icon: Briefcase },
+    { name: 'Projects', href: '#projects', icon: FolderOpen },
+    { name: 'Contact', href: '#contact', icon: Mail },
   ];
+
+  const handleNavClick = (href) => {
+    setIsOpen(false);
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled 
-          ? 'bg-gray-900/95 backdrop-blur-md border-b border-indigo-500/20 shadow-2xl' 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? 'bg-gray-900/80 backdrop-blur-md border-b border-white/10 shadow-2xl'
           : 'bg-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.05 }}
             className="flex items-center space-x-3"
           >
             <div className="relative">
-              <Brain className="w-8 h-8 text-indigo-400" />
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-lg">R</span>
+              </div>
               <motion.div
-                animate={{ 
-                  scale: [1, 1.2, 1],
-                  opacity: [0.5, 1, 0.5]
-                }}
+                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="absolute inset-0 w-8 h-8 bg-indigo-400 rounded-full opacity-20 blur-sm"
+                className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl blur-md"
               />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-              NeuroCode
+            <span className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              Ruhul Ain
             </span>
           </motion.div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
-            {navItems.map((item) => (
-              <motion.a
+          <div className="hidden md:flex items-center space-x-1">
+            {navItems.map((item, index) => (
+              <motion.button
                 key={item.name}
-                href={item.href}
-                whileHover={{ 
-                  scale: 1.05,
-                  color: "#8b5cf6"
-                }}
-                className="text-gray-300 hover:text-purple-400 transition-colors duration-300 font-medium relative group"
+                onClick={() => handleNavClick(item.href)}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="group relative px-4 py-2 rounded-xl text-gray-300 hover:text-white transition-all duration-300"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
               >
-                {item.name}
+                <span className="relative z-10 flex items-center space-x-2 font-medium">
+                  <item.icon className="w-4 h-4" />
+                  <span>{item.name}</span>
+                </span>
                 <motion.div
-                  className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"
+                  className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  whileHover={{ scale: 1.05 }}
                 />
-              </motion.a>
+              </motion.button>
             ))}
           </div>
 
@@ -82,9 +94,9 @@ export default function Navbar() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-gray-300 hover:text-white transition-colors"
+            className="md:hidden p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-white hover:bg-white/10 transition-all duration-300"
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </motion.button>
         </div>
 
@@ -95,23 +107,31 @@ export default function Navbar() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-gray-800/95 backdrop-blur-md border-t border-indigo-500/20"
+              className="md:hidden overflow-hidden"
             >
-              <div className="px-2 pt-2 pb-3 space-y-1">
+              <motion.div
+                initial={{ y: -20 }}
+                animate={{ y: 0 }}
+                exit={{ y: -20 }}
+                className="py-4 space-y-2 bg-gray-900/95 backdrop-blur-md rounded-2xl border border-white/10 mt-4 mx-4"
+              >
                 {navItems.map((item, index) => (
-                  <motion.a
+                  <motion.button
                     key={item.name}
-                    href={item.href}
-                    initial={{ opacity: 0, x: -50 }}
+                    onClick={() => handleNavClick(item.href)}
+                    initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    onClick={() => setIsOpen(false)}
-                    className="block px-3 py-2 text-gray-300 hover:text-purple-400 hover:bg-gray-700/50 rounded-md transition-all duration-300"
+                    whileHover={{ x: 10 }}
+                    className="w-full text-left px-6 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-300 rounded-xl mx-2"
                   >
-                    {item.name}
-                  </motion.a>
+                    <span className="flex items-center space-x-3">
+                      <item.icon className="w-5 h-5" />
+                      <span className="font-medium">{item.name}</span>
+                    </span>
+                  </motion.button>
                 ))}
-              </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
