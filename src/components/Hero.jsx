@@ -43,74 +43,114 @@ export default function Hero() {
             <Zap className="w-5 h-5 text-yellow-400" />
           </motion.div>
 
-          {/* Enhanced Main Heading */}
-          <div className="space-y-6">
+          {/* Professional Main Heading */}
+          <div className="space-y-8">
             <motion.h1
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
               className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-tight"
             >
               <motion.span 
                 className="block text-white mb-4"
-                animate={{ 
-                  textShadow: [
-                    "0 0 20px rgba(255,255,255,0.1)",
-                    "0 0 40px rgba(99,102,241,0.3)",
-                    "0 0 20px rgba(255,255,255,0.1)"
-                  ]
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5, duration: 0.6, ease: "easeOut" }}
               >
                 Hello, I'm
               </motion.span>
               <motion.span 
-                className="block bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent relative"
-                animate={{ 
-                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                }}
-                transition={{ duration: 4, repeat: Infinity }}
-                style={{ backgroundSize: '200% 100%' }}
+                className="block bg-gradient-to-r from-indigo-400 via-purple-400 to-blue-400 bg-clip-text text-transparent relative"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.7, duration: 0.8, ease: "easeOut" }}
               >
-                Ruhul Ain
+                Ruhul Amin
                 <motion.div
-                  className="absolute -inset-2 bg-gradient-to-r from-indigo-400/20 to-purple-400/20 blur-xl rounded-lg"
-                  animate={{ opacity: [0.3, 0.7, 0.3] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute -inset-1 bg-gradient-to-r from-indigo-400/10 to-purple-400/10 blur-lg rounded-lg"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0, 0.5, 0] }}
+                  transition={{ delay: 1.2, duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 />
               </motion.span>
             </motion.h1>
             
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="text-xl md:text-2xl lg:text-3xl text-gray-300 font-light max-w-4xl mx-auto leading-relaxed"
+              transition={{ delay: 0.9, duration: 0.8, ease: "easeOut" }}
+              className="text-xl md:text-2xl lg:text-3xl text-gray-300 font-light max-w-5xl mx-auto leading-relaxed"
             >
-              <span className="block mb-4 text-gray-200">Building the future with</span>
-              <div className="flex flex-wrap justify-center items-center gap-6">
+              <motion.span 
+                className="block mb-6 text-gray-200 font-medium"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.1, duration: 0.6 }}
+              >
+                Transforming ideas into digital reality through
+              </motion.span>
+              
+              <div className="space-y-4">
                 {[
-                  { text: "Full-Stack Development", colors: "from-blue-400 to-purple-500", delay: 0 },
-                  { text: "AI/ML Innovation", colors: "from-green-400 to-blue-500", delay: 1 },
-                  { text: "Modern UI/UX", colors: "from-pink-400 to-red-500", delay: 2 }
+                  { 
+                    text: "Full-Stack Development", 
+                    colors: "from-blue-500 to-indigo-600", 
+                    delay: 1.3,
+                    description: "MERN Stack • SAP Solutions • APIs"
+                  },
+                  { 
+                    text: "AI & Machine Learning", 
+                    colors: "from-emerald-500 to-teal-600", 
+                    delay: 1.5,
+                    description: "TensorFlow • PyTorch • Intelligent Systems"
+                  },
+                  { 
+                    text: "Modern UI/UX Design", 
+                    colors: "from-purple-500 to-pink-600", 
+                    delay: 1.7,
+                    description: "React • Tailwind • Framer Motion"
+                  }
                 ].map((item, index) => (
-                  <React.Fragment key={item.text}>
-                    <motion.span
-                      animate={{ 
-                        backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                      }}
-                      transition={{ duration: 3, repeat: Infinity, delay: item.delay }}
-                      className={`bg-gradient-to-r ${item.colors} bg-clip-text text-transparent font-semibold bg-[length:200%_100%] relative px-3 py-1 rounded-lg`}
+                  <motion.div
+                    key={item.text}
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ 
+                      delay: item.delay, 
+                      duration: 0.6, 
+                      ease: "easeOut" 
+                    }}
+                    className="group"
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02, x: 10 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      className="bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-indigo-400/30 transition-all duration-300"
                     >
-                      {item.text}
+                      <motion.h3
+                        className={`text-2xl md:text-3xl font-semibold mb-2 bg-gradient-to-r ${item.colors} bg-clip-text text-transparent`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: item.delay + 0.2, duration: 0.6 }}
+                      >
+                        {item.text}
+                      </motion.h3>
+                      <motion.p
+                        className="text-gray-400 text-base font-normal"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: item.delay + 0.4, duration: 0.6 }}
+                      >
+                        {item.description}
+                      </motion.p>
+                      
+                      {/* Subtle hover effect */}
                       <motion.div
-                        className={`absolute inset-0 bg-gradient-to-r ${item.colors} opacity-10 rounded-lg blur-sm`}
-                        animate={{ opacity: [0.05, 0.15, 0.05] }}
-                        transition={{ duration: 2, repeat: Infinity, delay: item.delay }}
+                        className={`absolute inset-0 bg-gradient-to-r ${item.colors} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300`}
+                        initial={false}
                       />
-                    </motion.span>
-                    {index < 2 && <span className="text-gray-500 text-lg">•</span>}
-                  </React.Fragment>
+                    </motion.div>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
